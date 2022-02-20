@@ -1,7 +1,58 @@
 import React from "react";
-import { View, Text } from "react-native";
+import { View, Text, KeyboardAvoidingView } from "react-native";
+
+import { GiftedChat, Bubble } from "react-native-gifted-chat";
 
 export default class Chat extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      messages: []
+    };
+  }
+
+  componentDidMount() {
+    this.setState({
+      messages: [
+        {
+          _id: 1,
+          text: "Hello developer",
+          createdAt: new Date(),
+          user: {
+            _id: 2,
+            name: "React Native",
+            avatar: "https://placeimg.com/140/140/any"
+          }
+        },
+        {
+          _id: 2,
+          text: "This is a system message",
+          createdAt: new Date(),
+          system: true
+        }
+      ]
+    });
+  }
+
+  onSend(messages = []) {
+    this.setState(previousState => ({
+      messages: GiftedChat.append(previousState.messages, messages)
+    }));
+  }
+
+  renderBubble(props) {
+    return (
+      <Bubble
+        {...props}
+        wrapperStyle={{
+          right: {
+            backgroundColor: "#000"
+          }
+        }}
+      />
+    );
+  }
+
   render() {
     //entered name state from Start screen gets displayed in status bar at the top of the app
     let name = this.props.route.params.name;
@@ -14,11 +65,20 @@ export default class Chat extends React.Component {
         style={{
           flex: 1,
           justifyContent: "center",
-          alignItems: "center",
           backgroundColor: bgColor
         }}
       >
-        <Text>Hello Chat!</Text>
+        <GiftedChat
+          renderBubble={this.renderBubble.bind(this)}
+          messages={this.state.messages}
+          onSend={messages => this.onSend(messages)}
+          user={{
+            _id: 1
+          }}
+        />
+        {Platform.OS === "android" ? (
+          <KeyboardAvoidingView behavior="height" />
+        ) : null}
       </View>
     );
   }
