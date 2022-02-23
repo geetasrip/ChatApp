@@ -35,16 +35,20 @@ export default class Chat extends React.Component {
   }
 
   componentDidMount() {
+    let name_current = this.props.route.params.name;
+    // Adds the name to top of screen
+    this.props.navigation.setOptions({ title: name_current });
     this.authUnsubscribe = firebase.auth().onAuthStateChanged(user => {
       if (!user) {
         firebase.auth().signInAnonymously();
       }
+
       this.setState({
         uid: user.uid,
         messages: [],
         user: {
           _id: user.uid,
-          name: "test",
+          name: name_current,
           avatar: "https://placeimg.com/140/140/any"
         }
       });
@@ -98,8 +102,6 @@ export default class Chat extends React.Component {
   // Add messages to database
   addMessage() {
     const message = this.state.messages[0];
-    console.log("message", message);
-    console.log("this.referenceMessages", this.referenceMessages);
     // add a new messages to the collection
     this.referenceMessages.add({
       _id: message._id,
@@ -124,8 +126,8 @@ export default class Chat extends React.Component {
 
   render() {
     //entered name state from Start screen gets displayed in status bar at the top of the app
-    let name = this.props.route.params.name;
-    this.props.navigation.setOptions({ title: name });
+    let name_current = this.props.route.params.name;
+    this.props.navigation.setOptions({ title: name_current });
 
     const { bgColor } = this.props.route.params;
 
